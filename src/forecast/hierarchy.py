@@ -136,9 +136,7 @@ def top_down(
         raise HierarchyError("proportions must sum to a positive number")
 
     root_value = float(base.get(hierarchy.root, 0.0))
-    leaf_values = {
-        leaf: root_value * proportions.get(leaf, 0.0) / total_share for leaf in leaves
-    }
+    leaf_values = {leaf: root_value * proportions.get(leaf, 0.0) / total_share for leaf in leaves}
     return bottom_up(hierarchy, leaf_values)
 
 

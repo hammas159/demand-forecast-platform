@@ -36,13 +36,13 @@ Forecaster = Callable[[Sequence[float], int], list[float]]
 def mae(actual: Sequence[float], predicted: Sequence[float]) -> float:
     if not actual:
         return 0.0
-    return statistics.fmean(abs(a - p) for a, p in zip(actual, predicted))
+    return statistics.fmean(abs(a - p) for a, p in zip(actual, predicted, strict=False))
 
 
 def rmse(actual: Sequence[float], predicted: Sequence[float]) -> float:
     if not actual:
         return 0.0
-    return (statistics.fmean((a - p) ** 2 for a, p in zip(actual, predicted))) ** 0.5
+    return (statistics.fmean((a - p) ** 2 for a, p in zip(actual, predicted, strict=False))) ** 0.5
 
 
 def smape(actual: Sequence[float], predicted: Sequence[float]) -> float:
@@ -51,7 +51,7 @@ def smape(actual: Sequence[float], predicted: Sequence[float]) -> float:
     if not actual:
         return 0.0
     terms = []
-    for a, p in zip(actual, predicted):
+    for a, p in zip(actual, predicted, strict=False):
         denominator = (abs(a) + abs(p)) / 2
         terms.append(0.0 if denominator == 0 else abs(a - p) / denominator)
     return round(statistics.fmean(terms), 6)
@@ -70,8 +70,11 @@ def naive_scale(train: Sequence[float], *, period: int = 1) -> float:
 
 
 def mase(
-    actual: Sequence[float], predicted: Sequence[float], train: Sequence[float],
-    *, period: int = 1,
+    actual: Sequence[float],
+    predicted: Sequence[float],
+    train: Sequence[float],
+    *,
+    period: int = 1,
 ) -> float:
     scale = naive_scale(train, period=period)
     if scale == 0:
@@ -139,13 +142,13 @@ def rolling_origin(
         predicted = forecaster(list(train), horizon)
 
         if len(predicted) != horizon:
-            raise ValueError(
-                f"forecaster returned {len(predicted)} values for horizon {horizon}"
-            )
+            raise ValueError(f"forecaster returned {len(predicted)} values for horizon {horizon}")
 
         result.folds.append(
             FoldResult(
-                origin=origin, actual=actual, predicted=predicted,
+                origin=origin,
+                actual=actual,
+                predicted=predicted,
                 mae=round(mae(actual, predicted), 6),
                 rmse=round(rmse(actual, predicted), 6),
                 smape=smape(actual, predicted),
@@ -157,15 +160,10 @@ def rolling_origin(
     return result
 
 
-def compare(
-    series: Sequence[float], forecasters: dict[str, Forecaster], **kw
-) -> dict[str, dict]:
+def compare(series: Sequence[float], forecasters: dict[str, Forecaster], **kw) -> dict[str, dict]:
     """Score several forecasters on the same folds.
 
     Same series, same origins, same horizon — otherwise the comparison measures the
     split rather than the models.
     """
-    return {
-        name: rolling_origin(series, fn, **kw).summary()
-        for name, fn in forecasters.items()
-    }
+    return {name: rolling_origin(series, fn, **kw).summary() for name, fn in forecasters.items()}

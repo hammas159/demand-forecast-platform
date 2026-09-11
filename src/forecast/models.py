@@ -54,9 +54,7 @@ def drift(history: Sequence[float], horizon: int) -> list[float]:
     return [float(history[-1] + slope * (i + 1)) for i in range(horizon)]
 
 
-def croston(
-    history: Sequence[float], horizon: int, *, alpha: float = 0.1
-) -> list[float]:
+def croston(history: Sequence[float], horizon: int, *, alpha: float = 0.1) -> list[float]:
     """Croston's method for intermittent demand.
 
     Two exponentially smoothed series rather than one: the **size** of a non-zero

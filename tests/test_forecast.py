@@ -272,7 +272,9 @@ class TestBacktest:
                 "naive": naive,
                 "seasonal": lambda h, n: naive_seasonal(h, n, period=4),
             },
-            horizon=4, initial=12, period=4,
+            horizon=4,
+            initial=12,
+            period=4,
         )
         assert scores["seasonal"]["mae"] < scores["naive"]["mae"]
 
@@ -287,7 +289,9 @@ class TestBacktest:
         """Otherwise the comparison measures the split rather than the models."""
         series = [10, 20, 30, 40] * 10
         scores = compare(
-            series, {"a": naive, "b": lambda h, n: moving_average(h, n)},
-            horizon=4, initial=12,
+            series,
+            {"a": naive, "b": lambda h, n: moving_average(h, n)},
+            horizon=4,
+            initial=12,
         )
         assert scores["a"]["folds"] == scores["b"]["folds"]
