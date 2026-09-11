@@ -1,0 +1,31 @@
+[project]
+name = "demand-forecast-platform"
+version = "0.1.0"
+description = "Hierarchical demand forecasting: reconciliation, intermittent demand, leakage-free rolling-origin backtesting."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# No numpy, no pandas, no statsmodels. Reconciliation is arithmetic and the
+# backtest is a loop; the dependency would exceed the code.
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.3", "ruff>=0.8"]
+ui  = ["streamlit>=1.40", "pandas>=2.2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/forecast"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
