@@ -158,3 +158,53 @@ rolling_origin(history["lahore"], croston, horizon=4, period=52).summary()
 ## License
 
 MIT
+
+---
+
+## Run it yourself
+
+```bash
+git clone https://github.com/hammas159/demand-forecast-platform
+cd demand-forecast-platform
+
+pip install -e .         # zero dependencies to resolve
+pytest -q                # 41 tests, under a second
+```
+
+```python
+from forecast import Hierarchy, optimal, rolling_origin, compare, croston, naive_seasonal
+
+h = Hierarchy()
+h.add("total")
+h.add("north", parent="total"); h.add("south", parent="total")
+h.add("lahore", parent="north"); h.add("karachi", parent="south")
+
+base = {name: my_forecast(history[name], horizon=4) for name in h.nodes}
+plan = optimal(h, base)
+assert h.is_coherent(plan)          # children sum to parents, exactly
+
+compare(history["lahore"],
+        {"naive": naive, "seasonal": lambda h_, n: naive_seasonal(h_, n, period=52),
+         "croston": croston},
+        horizon=4, period=52)
+```
+
+## Problems hit while building this
+
+**Optimal reconciliation was not actually coherent.** Distributing each parent's
+disagreement to its children in a single top-down pass looks obviously right and is
+wrong: adjusting a level overwrites the value its own parent just fixed, so every level
+silently breaks the one above it. The output looked plausible and did not add up.
+*Fixed* with two passes — blend bottom-up, then distribute top-down — and coherence is
+asserted for every method rather than assumed.
+
+**A knob that did nothing.** Setting every weight to zero was supposed to reduce
+`optimal` to plain bottom-up. It did not, until the two-pass fix. There is now a test
+asserting the degenerate case matches exactly, because a parameter that does not do what
+it claims is worse than no parameter.
+
+**A test expectation was wrong rather than the code.** MASE's denominator *is* seasonal
+naive, so seasonal naive scores exactly 1.0 and cannot beat itself — my assertion that
+it would `beat_naive` was a misunderstanding of the metric. The corrected test asserts
+`mase == 1.0` for the benchmark and `> 1` for plain naive, which says considerably more
+about what the number means.
