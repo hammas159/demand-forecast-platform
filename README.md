@@ -132,7 +132,7 @@ rolling_origin(history["lahore"], croston, horizon=4, period=52).summary()
 
 ## Tests
 
-**41 tests. No dependencies, no fixtures, no data download.**
+**45 tests (41 core + 4 for the optional Streamlit demo). No dependencies, no fixtures, no data download.**
 
 | Covered | |
 |---|---|
@@ -168,7 +168,7 @@ git clone https://github.com/hammas159/demand-forecast-platform
 cd demand-forecast-platform
 
 pip install -e .         # zero dependencies to resolve
-pytest -q                # 41 tests, under a second
+pytest -q                # 45 tests, under a second
 ```
 
 ```python
@@ -188,6 +188,22 @@ compare(history["lahore"],
          "croston": croston},
         horizon=4, period=52)
 ```
+
+### The demo dashboard (`ui` dependency group)
+
+`pyproject.toml` has declared a `streamlit` + `pandas` `ui` group since the repo's
+first commit; this is the actual demo that group was for. Two tabs: enter three
+independent, disagreeing forecasts and watch bottom-up/top-down/optimal reconciliation
+force them coherent; and backtest naive/seasonal/moving-average/drift/Croston on a
+regular or intermittent-demand series through the same rolling-origin folds, ranked by
+MASE.
+
+```bash
+uv sync --group ui        # or: pip install streamlit pandas
+streamlit run ui/app.py
+```
+
+Local only, synthetic demo series generated on load — not a deployed service.
 
 ## Problems hit while building this
 
