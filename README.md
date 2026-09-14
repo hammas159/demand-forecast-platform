@@ -1,19 +1,45 @@
-# demand-forecast-platform (Python, pandas, zero core dependencies)
+<h1 align="center">demand-forecast-platform</h1>
+<p align="center"><i>Hierarchical forecasting where the numbers add up, and a backtest that cannot lie to you</i></p>
 
-[![ci](https://github.com/hammas159/demand-forecast-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/hammas159/demand-forecast-platform/actions/workflows/ci.yml)
-![python](https://img.shields.io/badge/python-3.10%2B-blue)
-![dependencies](https://img.shields.io/badge/dependencies-none-success)
-![license](https://img.shields.io/badge/license-MIT-green)
+<p align="center">
+  <a href="#the-problem-nobody-mentions-in-the-tutorial">The problem</a> &middot;
+  <a href="#intermittent-demand">Intermittent demand</a> &middot;
+  <a href="#the-backtest-cannot-leak">The backtest</a> &middot;
+  <a href="#mape-is-the-wrong-metric-and-it-is-the-industry-default">MAPE</a> &middot;
+  <a href="#does-anything-beat-seasonal-naive">Does anything beat naive?</a> &middot;
+  <a href="#problems-hit-while-building-this">Problems hit</a>
+</p>
 
-**Hierarchical demand forecasting where the numbers actually add up — and a backtest
-that cannot lie to you.**
-
-Zero dependencies. Reconciliation is arithmetic and a backtest is a loop; importing a
-numerics stack for either would exceed the code.
+<p align="center">
+  <a href="https://github.com/hammas159/demand-forecast-platform/actions/workflows/ci.yml"><img src="https://github.com/hammas159/demand-forecast-platform/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
+  <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="python">
+  <img src="https://img.shields.io/badge/core%20deps-zero-success" alt="deps">
+  <img src="https://img.shields.io/badge/stack-pandas%20%C2%B7%20Streamlit-orange" alt="stack">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="license"></a>
+</p>
 
 ---
 
 ## The problem nobody mentions in the tutorial
+
+```mermaid
+flowchart LR
+    H["hierarchy<br/>SKU / store / region"] --> F["forecast each level"]
+    F --> X{"do the levels<br/>add up?"}
+    X -->|"no"| RC["reconcile"]
+    RC --> B["rolling-origin backtest"]
+    X -->|"yes"| B
+    B --> N{"beats seasonal naive?"}
+    N -->|"no"| K["keep the naive baseline"]
+    N -->|"yes"| M["ship the model"]
+
+    style K fill:#f59e0b,color:#fff
+    style M fill:#16a34a,color:#fff
+```
+
+**The seasonal-naive check is the honest part.** A forecast that does not beat it is not a
+forecast, it is an expense - and most tutorials never run the comparison.
+
 
 ```
 total  = 1000      ← forecast independently
@@ -154,6 +180,10 @@ rolling_origin(history["lahore"], croston, horizon=4, period=52).summary()
 - One seasonal period. Daily-and-weekly together needs decomposition.
 - No exogenous regressors. Promotions and holidays are the obvious next feature and the
   backtest harness already accommodates them.
+
+## Keywords
+
+demand forecasting &middot; hierarchical forecasting &middot; forecast reconciliation &middot; intermittent demand &middot; Croston &middot; rolling origin backtest &middot; walk-forward validation &middot; MAPE &middot; sMAPE &middot; MASE &middot; seasonal naive baseline &middot; time series &middot; supply chain &middot; inventory &middot; retail analytics &middot; Online Retail II
 
 ## License
 
