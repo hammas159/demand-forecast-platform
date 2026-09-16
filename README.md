@@ -219,21 +219,25 @@ compare(history["lahore"],
         horizon=4, period=52)
 ```
 
-### The demo dashboard (`ui` dependency group)
+### Input / Output
 
-`pyproject.toml` has declared a `streamlit` + `pandas` `ui` group since the repo's
-first commit; this is the actual demo that group was for. Two tabs: enter three
-independent, disagreeing forecasts and watch bottom-up/top-down/optimal reconciliation
-force them coherent; and backtest naive/seasonal/moving-average/drift/Croston on a
-regular or intermittent-demand series through the same rolling-origin folds, ranked by
-MASE.
+![input](docs/images/input.png)
 
-```bash
-uv sync --group ui        # or: pip install streamlit pandas
-streamlit run ui/app.py
-```
+`python demo.py`
 
-Local only, synthetic demo series generated on load — not a deployed service.
+![output](docs/images/output.png)
+
+Two results, and the second one is a loss.
+
+Reconciliation works: independent forecasts disagree with themselves at every level, and
+both `bottom_up` and `optimal` return a set that sums correctly, with `is_coherent`
+asserting it rather than the README claiming it.
+
+The intermittent series is the honest half. **Croston does not beat a naive forecast
+here** — MASE 1.192, and all four forecasters score above 1.0, meaning every one of them
+is worse than doing nothing. Croston is merely the least bad. On 29 zero days out of 40
+the right answer is not a better forecaster; it is to stop forecasting the series and
+stock it to a service level instead.
 
 ## Problems hit while building this
 
