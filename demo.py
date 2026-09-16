@@ -7,6 +7,7 @@ Two things nobody notices until a planner does: independent forecasts of
 series -- a part that sells on 11 days out of 40 -- defeats every ordinary
 forecaster, Croston included. No dependencies, no network.
 """
+
 import random
 import sys
 
@@ -29,8 +30,12 @@ for leaf in ("s1", "s2"):
 # on its own history, so no level agrees with any other.
 INDEPENDENT = {
     "total": 1000.0,
-    "north": 610.0, "south": 440.0,
-    "n1": 300.0, "n2": 290.0, "s1": 250.0, "s2": 205.0,
+    "north": 610.0,
+    "south": 440.0,
+    "n1": 300.0,
+    "n2": 290.0,
+    "s1": 250.0,
+    "s2": 205.0,
 }
 
 print("INPUT")
@@ -41,16 +46,22 @@ print()
 
 print("OUTPUT")
 print(f"   coherent as forecast?   {h.is_coherent(INDEPENDENT)}")
-print(f"      north + south = {INDEPENDENT['north'] + INDEPENDENT['south']:.1f}, "
-      f"but total says {INDEPENDENT['total']:.1f}")
-print(f"      n1 + n2       = {INDEPENDENT['n1'] + INDEPENDENT['n2']:.1f}, "
-      f"but north says {INDEPENDENT['north']:.1f}")
+print(
+    f"      north + south = {INDEPENDENT['north'] + INDEPENDENT['south']:.1f}, "
+    f"but total says {INDEPENDENT['total']:.1f}"
+)
+print(
+    f"      n1 + n2       = {INDEPENDENT['n1'] + INDEPENDENT['n2']:.1f}, "
+    f"but north says {INDEPENDENT['north']:.1f}"
+)
 print()
 
 for name, fn in (("bottom_up", bottom_up), ("optimal", optimal)):
     rec = fn(h, INDEPENDENT)
-    print(f"   {name:10} coherent={h.is_coherent(rec)}   "
-          f"total={rec['total']:.1f}  north={rec['north']:.1f}  south={rec['south']:.1f}")
+    print(
+        f"   {name:10} coherent={h.is_coherent(rec)}   "
+        f"total={rec['total']:.1f}  north={rec['north']:.1f}  south={rec['south']:.1f}"
+    )
 print()
 
 # --- intermittent demand -----------------------------------------------------
