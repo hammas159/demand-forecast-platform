@@ -1,4 +1,4 @@
-<h1 align="center">demand-forecast-platform</h1>
+<h1 align="center">demand-forecast-platform (Python · hierarchical reconciliation · Croston · ETS)</h1>
 <p align="center"><i>Hierarchical forecasting where the numbers add up, and a backtest that cannot lie to you</i></p>
 
 <p align="center">
